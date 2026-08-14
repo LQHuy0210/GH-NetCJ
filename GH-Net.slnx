@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="GH-Net.Core/GH-Net.Core.csproj" />
+  <Project Path="GH-Net.Licensing/GH-Net.Licensing.csproj" />
+  <Project Path="GH-Net.Repository/GH-Net.Repository.csproj" />
+  <Project Path="GH-Net.Service/GH-Net.Service.csproj" />
+  <Project Path="GH-Net/GH-Net.csproj" />
+</Solution>

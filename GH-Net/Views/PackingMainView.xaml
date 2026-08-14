@@ -1,0 +1,52 @@
+<UserControl x:Class="GH_Net.WPF.Views.PackingMainView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:svgc="http://sharpvectors.codeplex.com/svgc/" Background="{StaticResource PageBrush}">
+ <Grid Margin="28,20"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+  <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Button Width="80" Content="← Back" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding BackCommand}"/>
+   <StackPanel Grid.Column="2"><TextBlock Text="{Binding JobName, Mode=OneWay}" FontSize="24" FontWeight="Bold"/><TextBlock><Run Text="{Binding StatusText, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Workflow, Mode=OneWay}"/></TextBlock></StackPanel>
+   <StackPanel x:Name="HeaderActions" Grid.Column="3" Orientation="Horizontal">
+    <Button Width="42" Height="40" Padding="9" ToolTip="{DynamicResource Packing.Trace}" ToolTipService.ShowOnDisabled="True" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding TraceCommand}">
+     <svgc:SvgIcon Width="20" Height="20" UriSource="pack://application:,,,/GH-Net;component/Assets/trace.svg" Fill="{StaticResource TextBrush}" Stroke="{StaticResource TextBrush}"/>
+    </Button>
+    <Button Margin="8,0,0,0" Width="42" Height="40" Padding="9" ToolTip="{DynamicResource Packing.Export}" ToolTipService.ShowOnDisabled="True" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding ExportCommand}">
+     <svgc:SvgIcon Width="20" Height="20" UriSource="pack://application:,,,/GH-Net;component/Assets/report.svg" Fill="{StaticResource TextBrush}" Stroke="{StaticResource TextBrush}"/>
+    </Button>
+   </StackPanel>
+  </Grid>
+  <Border Grid.Row="2" Padding="14" Background="#FFF4E5" CornerRadius="6" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}"><TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="{StaticResource WarningBrush}"/></Border>
+  <Grid Grid.Row="4"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
+   <Grid>
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+    <UniformGrid Grid.Row="0" Columns="2">
+     <Border Margin="0,0,8,0" Style="{StaticResource CardStyle}" Padding="20"><StackPanel><TextBlock Text="CARTON ĐANG MỞ" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding CartonCode, Mode=OneWay}" FontSize="26" FontWeight="Bold"/><TextBlock><Run Text="Sản phẩm: "/><Run Text="{Binding CartonCount, Mode=OneWay}"/><Run Text=" / "/><Run Text="{Binding CartonCapacity, Mode=OneWay}"/></TextBlock></StackPanel></Border>
+     <Border Margin="8,0,0,0" Style="{StaticResource CardStyle}" Padding="20"><StackPanel><TextBlock Text="PALLET ĐANG MỞ" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding PalletCode, Mode=OneWay}" FontSize="26" FontWeight="Bold"/><TextBlock><Run Text="Carton: "/><Run Text="{Binding PalletCount, Mode=OneWay}"/><Run Text=" / "/><Run Text="{Binding PalletCapacity, Mode=OneWay}"/></TextBlock></StackPanel></Border>
+    </UniformGrid>
+    <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="18">
+     <Grid>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+      <TextBlock Grid.Row="0" FontSize="17" FontWeight="SemiBold"><Run Text="Sản phẩm đã đóng: "/><Run Text="{Binding PackedProducts, Mode=OneWay}"/><Run Text=" / "/><Run Text="{Binding TotalProducts, Mode=OneWay}"/></TextBlock>
+      <TextBlock Grid.Row="1" Margin="0,14,0,8" Text="10 sản phẩm quét gần nhất" Foreground="{StaticResource MutedTextBrush}"/>
+      <ListBox Grid.Row="2" VerticalAlignment="Stretch" ItemsSource="{Binding RecentProducts, Mode=OneWay}"/>
+     </Grid>
+    </Border>
+   </Grid>
+   <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="18">
+    <StackPanel>
+     <TextBlock Text="ĐIỀU KHIỂN" FontSize="17" FontWeight="SemiBold"/>
+     <Button Margin="0,16,0,0" Content="{DynamicResource Common.Start}" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding StartCommand}"/>
+     <Button Margin="0,9,0,0" Content="{DynamicResource Common.Stop}" Style="{StaticResource DangerButtonStyle}" Command="{Binding StopCommand}"/>
+     <Separator Margin="0,16"/>
+     <Button Content="In lại tem hiện tại" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding RetryPrintCommand}"/>
+     <TextBlock Margin="0,20,0,7" Text="{DynamicResource Packing.CodeStatistics}" FontSize="15" FontWeight="SemiBold"/>
+     <UniformGrid Columns="2">
+      <Border Margin="0,0,4,8" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.CheckedProducts}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding CheckedProducts, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+      <Border Margin="4,0,0,8" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.RemainingProducts}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding RemainingProducts, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+      <Border Margin="0,0,4,8" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.CheckedCartons}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding CheckedCartons, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+      <Border Margin="4,0,0,8" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.RemainingCartons}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding RemainingCartons, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+      <Border Margin="0,0,4,0" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.CheckedPallets}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding CheckedPallets, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+      <Border Margin="4,0,0,0" Padding="10,8" Background="#F4F8FB" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6"><StackPanel><TextBlock Text="{DynamicResource Packing.RemainingPallets}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/><TextBlock Text="{Binding RemainingPallets, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"/></StackPanel></Border>
+     </UniformGrid>
+    </StackPanel>
+   </Border>
+  </Grid>
+ </Grid>
+</UserControl>

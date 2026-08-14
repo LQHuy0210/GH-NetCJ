@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\GH-Net.Licensing\GH-Net.Licensing.csproj" />
+    <ProjectReference Include="..\GH-Net.Repository\GH-Net.Repository.csproj" />
+    <ProjectReference Include="..\GH-Net.Core\GH-Net.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>GH-Net.Service</AssemblyName>
+    <RootNamespace>GH_Net.Service</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

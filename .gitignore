@@ -1,0 +1,10 @@
+# Visual Studio user state and file-content indexes
+.vs/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Local build and tool artifacts
+.dotnet-home/
+artifacts/

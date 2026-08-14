@@ -1,0 +1,126 @@
+<Window x:Class="GH_Net.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:GH_Net.WPF.Converters"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        Title="GH-Net"
+        Width="1120" Height="750"
+        MinWidth="900" MinHeight="680"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <c:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="68"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="34"/>
+        </Grid.RowDefinitions>
+
+        <Border Background="White" BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="28,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Width="40" Height="40"
+                       Source="pack://application:,,,/GH-Net;component/Assets/logo.png"
+                       Stretch="Uniform"
+                       VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Margin="12,0,0,0"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="GH-Net" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="Printer Manager" FontSize="11"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="44" Height="44" MinWidth="44" Padding="0"
+                            Margin="0,0,8,0"
+                            Content="{Binding LanguageCode, Mode=OneWay}"
+                            ToolTip="{Binding LanguageToolTip, Mode=OneWay}"
+                            FontWeight="Bold"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding ToggleLanguageCommand, Mode=OneWay}"/>
+                    <Button Width="44" Height="44" MinWidth="44" Padding="8"
+                            Margin="0,0,8,0"
+                            ToolTip="{DynamicResource Main.SettingsTooltip}"
+                            IsEnabled="{Binding CanOpenSettings, Mode=OneWay}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="Settings_Click">
+                        <svgc:SvgIcon Width="20" Height="20"
+                                      SnapsToDevicePixels="True"
+                                      UriSource="pack://application:,,,/GH-Net;component/Assets/setting.svg"
+                                      Fill="Transparent"
+                                      Stroke="{StaticResource TextBrush}"/>
+                    </Button>
+                    <Button Width="44" Height="44" MinWidth="44" Padding="0"
+                            ToolTip="{Binding LicenseToolTip, Mode=OneWay}"
+                            Foreground="{Binding LicenseIndicatorBrush, Mode=OneWay}"
+                            FontSize="21" FontWeight="Bold"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="License_Click"
+                            Content="!"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ContentControl x:Name="MainContent" Grid.Row="1"/>
+
+        <Border Grid.Row="2" Background="White"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid Margin="28,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"
+                                ToolTip="{Binding PrinterConnectionText, Mode=OneWay}">
+                        <svgc:SvgIcon Width="24" Height="24"
+                                      SnapsToDevicePixels="True"
+                                      UriSource="pack://application:,,,/GH-Net;component/Assets/printer.svg"
+                                      Fill="Transparent"
+                                      Stroke="{Binding IsPrinterConnected, Mode=OneWay,
+                                          Converter={StaticResource BoolToBrushConverter}}"/>
+                        <TextBlock Margin="8,0,0,0"
+                                   Text="{DynamicResource Common.Printer}"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="28,0,0,0"
+                                ToolTip="{Binding ScannerConnectionText, Mode=OneWay}">
+                        <svgc:SvgIcon Width="22" Height="22"
+                                      SnapsToDevicePixels="True"
+                                      UriSource="pack://application:,,,/GH-Net;component/Assets/scanner.svg"
+                                      Fill="Transparent"
+                                      Stroke="{Binding IsScannerConnected, Mode=OneWay,
+                                          Converter={StaticResource BoolToBrushConverter}}"/>
+                        <TextBlock Margin="8,0,0,0"
+                                   Text="{DynamicResource Common.Scanner}"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="{Binding AppVersion, Mode=OneWay}"
+                           Foreground="{StaticResource MutedTextBrush}"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

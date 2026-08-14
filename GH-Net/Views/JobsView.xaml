@@ -1,0 +1,222 @@
+<UserControl x:Class="GH_Net.WPF.Views.JobsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:GH_Net.WPF.Converters"
+             xmlns:vm="clr-namespace:GH_Net.WPF.ViewModels"
+             Background="{StaticResource PageBrush}">
+    <UserControl.Resources>
+        <c:JobStatusToTextConverter x:Key="StatusTextConverter"/>
+        <c:JobStatusToBrushConverter x:Key="StatusBrushConverter"/>
+        <Style x:Key="CenteredCellTextStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,18,28,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="310"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{StaticResource DangerButtonStyle}"
+                    Command="{Binding DeleteSelectedCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource Common.Delete}"/>
+                    <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="8"
+                            Background="#33FFFFFF">
+                        <TextBlock Text="{Binding SelectedCount, Mode=OneWay}" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="2" Style="{StaticResource SecondaryButtonStyle}"
+                    Command="{Binding RefreshCommand}" Content="{DynamicResource Common.Refresh}"/>
+
+            <Button Grid.Column="4" Style="{StaticResource PrimaryButtonStyle}"
+                    Command="{Binding CreateJobCommand}"
+                    Content="{DynamicResource Jobs.Create}"/>
+
+            <Grid Grid.Column="6">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Padding="34,9,36,9"
+                         ToolTip="{DynamicResource Jobs.SearchTooltip}"/>
+                <TextBlock Text="⌕" FontSize="19" Foreground="{StaticResource MutedTextBrush}"
+                           Margin="11,0,0,0" VerticalAlignment="Center"
+                           IsHitTestVisible="False"/>
+                <Button Content="×" Width="30" Height="30" HorizontalAlignment="Right"
+                        Margin="0,0,4,0" Background="Transparent" BorderThickness="0"
+                        Foreground="{StaticResource MutedTextBrush}"
+                        Command="{Binding ClearSearchCommand}"/>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" ClipToBounds="True">
+            <Grid>
+                <DataGrid x:Name="JobsGrid" ItemsSource="{Binding FilteredJobs, Mode=OneWay}"
+                          SelectionMode="Single"
+                          RowHeight="42"
+                          ColumnHeaderHeight="38"
+                          FontSize="15"
+                          MouseDoubleClick="JobsGrid_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="54">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding DataContext.IsAllVisibleSelected,
+                                                RelativeSource={RelativeSource AncestorType=DataGrid},
+                                                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type vm:JobListItemViewModel}">
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn x:Name="NameColumn" Header="{DynamicResource Jobs.Name}"
+                                            Binding="{Binding Name, Mode=OneWay}"
+                                            ElementStyle="{StaticResource CenteredCellTextStyle}"
+                                            Width="*" MinWidth="220"/>
+
+                        <DataGridTemplateColumn x:Name="StatusColumn" Header="{DynamicResource Jobs.Status}" Width="145">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Padding="9,3"
+                                            CornerRadius="12"
+                                            Background="{Binding Status, Mode=OneWay,
+                                                Converter={StaticResource StatusBrushConverter}}">
+                                        <TextBlock Text="{Binding Status, Mode=OneWay,
+                                                   Converter={StaticResource StatusTextConverter}}"
+                                                   Foreground="White" FontSize="11"
+                                                   FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn x:Name="ProgressColumn" Header="{DynamicResource Jobs.Progress}" Width="210">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ProgressBar Height="7" Minimum="0" Maximum="100"
+                                                     Value="{Binding ProgressPercent, Mode=OneWay}"
+                                                     VerticalAlignment="Center"
+                                                     Foreground="{StaticResource PrimaryBrush}"
+                                                     Background="#E7EDF3"/>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding ProgressText, Mode=OneWay}"
+                                                   Foreground="{StaticResource MutedTextBrush}"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn x:Name="CreatedAtColumn" Header="{DynamicResource Jobs.CreatedAt}"
+                                            Binding="{Binding CreatedAt, Mode=OneWay,
+                                                StringFormat=dd/MM/yyyy HH:mm}"
+                                            ElementStyle="{StaticResource CenteredCellTextStyle}"
+                                            Width="155"/>
+
+                        <DataGridTemplateColumn Header="" Width="78">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{DynamicResource Common.Open}" Padding="9,5"
+                                            Height="30"
+                                            MinWidth="64"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Command="{Binding DataContext.OpenJobCommand,
+                                            RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsHitTestVisible="False">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasVisibleJobs, Mode=OneWay}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="{DynamicResource Jobs.Empty}" FontSize="18" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{DynamicResource Jobs.EmptyHint}"
+                               Margin="0,6,0,0" Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding NotificationMessage, Mode=OneWay}"
+                           MaxWidth="520" TextTrimming="CharacterEllipsis"
+                           Foreground="{StaticResource DangerBrush}"/>
+                <TextBlock Text="{Binding SelectionSummary, Mode=OneWay}" Margin="16,0,0,0"
+                           Foreground="{StaticResource MutedTextBrush}"/>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.RowSpan="5"
+                Panel.ZIndex="100"
+                Background="#A8FFFFFF"
+                Visibility="{Binding IsBusy, Mode=OneWay,
+                    Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Width="250"
+                    Padding="24,20"
+                    CornerRadius="9"
+                    Background="White"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel>
+                    <ProgressBar Height="6"
+                                 IsIndeterminate="True"
+                                 Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="{Binding BusyMessage, Mode=OneWay}"
+                               Margin="0,13,0,0"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

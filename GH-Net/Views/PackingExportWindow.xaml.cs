@@ -1,0 +1,3 @@
+using Microsoft.Win32; using System.Windows; using GH_Net.Service.Abstractions; using GH_Net.WPF.ViewModels;
+namespace GH_Net.WPF.Views;
+public partial class PackingExportWindow:Window{private readonly PackingExportViewModel _vm;public PackingExportWindow(PackingExportViewModel vm){InitializeComponent();_vm=vm;DataContext=vm;vm.RequestDestinationPath=Select;Closed+=(_,_)=>vm.Dispose();}private string? Select(string name,PackingExportFormat format){var excel=format==PackingExportFormat.Excel;var d=new SaveFileDialog{FileName=name,Filter=excel?"Excel (*.xlsx)|*.xlsx":"ZIP (*.zip)|*.zip",DefaultExt=excel?".xlsx":".zip",AddExtension=true,OverwritePrompt=true};return d.ShowDialog(this)==true?d.FileName:null;}}
