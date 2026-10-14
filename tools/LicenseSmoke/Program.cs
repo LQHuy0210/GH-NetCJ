@@ -23,6 +23,27 @@ var payload = new LicensePayload
 
 try
 {
+    Assert((int)LicenseFeature.Printer == 1 && (int)LicenseFeature.Camera == 2 &&
+           (int)LicenseFeature.Export == 4 && (int)LicenseFeature.Plc == 8 &&
+           (int)LicenseFeature.Scanner == 16, "Authoritative Base feature assignments changed.");
+    foreach (object claim in new object[] { "Camera", 2, "All", 15, "Scanner", 16 })
+    {
+        LicenseFeature expected = claim switch
+        {
+            "Camera" or 2 => LicenseFeature.Camera,
+            "All" or 15 => (LicenseFeature)15,
+            _ => LicenseFeature.Scanner
+        };
+        var result = codec.VerifyToken(SignFeatureClaim(payload, claim, privateKey), keys, hardwareId, now);
+        Assert(result.IsValid && result.Payload!.Features == expected,
+            $"Legacy feature claim {claim} changed entitlement.");
+    }
+    for (int mask = 0; mask < 32; mask++)
+    {
+        var result = codec.VerifyToken(codec.CreateToken(payload with { Features = (LicenseFeature)mask }, "K01", privateKey), keys, hardwareId, now);
+        Assert(result.IsValid && result.Payload!.Features == (LicenseFeature)mask,
+            $"Five-feature mask {mask} failed round trip.");
+    }
     string token = codec.CreateToken(payload, "K01", privateKey);
     Assert(token.StartsWith("GHN1.K01.", StringComparison.Ordinal), "Token version/key prefix changed.");
     Assert(codec.VerifyToken(token, keys, hardwareId, now).IsValid, "Valid token was rejected.");
@@ -113,6 +134,19 @@ finally
     CryptographicOperations.ZeroMemory(publicKey);
 }
 
+static string SignFeatureClaim(LicensePayload payload, object claim, byte[] privateKey)
+{
+    var options = new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+    var json = System.Text.Json.JsonSerializer.SerializeToNode(payload, options)!;
+    json["features"] = claim is string name
+        ? System.Text.Json.Nodes.JsonValue.Create(name)
+        : System.Text.Json.Nodes.JsonValue.Create((int)claim);
+    static string Encode(byte[] bytes) => Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+    string part = Encode(System.Text.Encoding.UTF8.GetBytes(json.ToJsonString()));
+    string input = $"GHN1.K01.{part}";
+    using Key key = Key.Import(SignatureAlgorithm.Ed25519, privateKey, KeyBlobFormat.RawPrivateKey);
+    return $"{input}.{Encode(SignatureAlgorithm.Ed25519.Sign(key, System.Text.Encoding.UTF8.GetBytes(input)))}";
+}
 static void Assert(bool condition, string message)
 {
     if (!condition)

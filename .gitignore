@@ -1,10 +1,49 @@
-# Visual Studio user state and file-content indexes
+# Visual Studio cache and per-user settings
 .vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# .NET build output
-**/bin/
-**/obj/
-
-# Local build and tool artifacts
-.dotnet-home/
+# .NET build, publish and test output
+[Bb]in/
+[Oo]bj/
 artifacts/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Local .NET CLI state
+.dotnet-home/
+
+# Local environment, licenses and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.lic
+*.ghkey
+*.key
+*.pfx
+*.p12
+
+# Runtime SQLite databases and logs
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.sqlite3-journal
+*.log
+
+# OS temporary files
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -6,8 +6,9 @@ public enum LicenseFeature
 {
     None = 0,
     Printer = 1,
-    Scanner = 2,
+    Camera = 2,
     Export = 4,
     Plc = 8,
-    All = Printer | Scanner | Export | Plc
+    Scanner = 16,
+    All = Printer | Camera | Export | Plc | Scanner
 }

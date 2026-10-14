@@ -1,7 +1,6 @@
 using NSec.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GH_Net.Licensing;
 
@@ -17,7 +16,7 @@ public sealed class LicenseTokenCodec
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new LicenseFeatureJsonConverter() }
     };
 
     /// <summary>Signs a payload with a raw Ed25519 private key.</summary>
