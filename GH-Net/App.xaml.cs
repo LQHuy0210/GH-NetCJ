@@ -37,6 +37,9 @@ public partial class App : Application
             _ = Services.GetRequiredService<TraceabilityViewModel>();
             _ = Services.GetRequiredService<PackingExportViewModel>();
             _ = Services.GetRequiredService<SettingsViewModel>();
+            _ = new SettingsWindow(Services.GetRequiredService<SettingsViewModel>());
+            _ = new TechnicalAccessWindow(Services.GetRequiredService<ITechnicalSettingsAccess>(), Services.GetRequiredService<LanguageService>(), setup: false);
+            _ = new CreateJobWindow(Services.GetRequiredService<CreateJobViewModel>());
             _ = Services.GetRequiredService<MainWindow>();
             Shutdown(0);
             return;
@@ -89,6 +92,12 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        // Drain the atomic transition and send PLC STOP before disposing device transports.
+        if (Services?.GetService<IPackingRuntimeService>() is { IsRunning: true } runtime)
+        {
+            try { Task.Run(() => runtime.StopAsync()).GetAwaiter().GetResult(); }
+            catch { /* The persisted paused/uncertain state is reconciled on the next launch. */ }
+        }
         if (Services is IAsyncDisposable asyncDisposable)
         {
             Task.Run(async () => await asyncDisposable.DisposeAsync())
@@ -146,6 +155,11 @@ public partial class App : Application
         services.AddSingleton<ILicenseManager, LicenseManager>();
         services.AddSingleton<IScannerDevice, SerialScannerDevice>();
         services.AddSingleton<IZebraPrinterDevice, ZebraPrinterDevice>();
+        services.AddSingleton<ICameraDevice, CameraDevice>();
+        services.AddSingleton<IPlcDevice, PlcDevice>();
+        services.AddSingleton<ITechnicalLockStore, TechnicalLockStore>();
+        services.AddSingleton<ITechnicalSettingsAccess, TechnicalSettingsAccess>();
+        services.AddSingleton<IAutomationService, AutomationService>();
 
         services.AddSingleton<ITraceabilityService, TraceabilityService>();
         services.AddSingleton<IPackingExportService, PackingExportService>();

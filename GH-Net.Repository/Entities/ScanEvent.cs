@@ -6,6 +6,8 @@ public class ScanEvent
 {
     public long Id { get; set; }
     public int JobId { get; set; }
+    public string Source { get; set; } = "Scanner";
+    public long? CameraSequence { get; set; }
     public string ScannedCode { get; set; } = string.Empty;
     public ScanCodeType ExpectedCodeType { get; set; }
     public ScanResultCode ResultCode { get; set; }

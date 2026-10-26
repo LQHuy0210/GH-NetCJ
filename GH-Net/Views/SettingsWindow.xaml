@@ -10,6 +10,15 @@
         ShowInTaskbar="False"
         UseLayoutRounding="True">
     <Window.Resources>
+        <Style x:Key="DeviceStatusTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="Tag" Value="Success"><Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/></Trigger>
+                <Trigger Property="Tag" Value="Error"><Setter Property="Foreground" Value="{StaticResource DangerBrush}"/></Trigger>
+            </Style.Triggers>
+        </Style>
+
+
         <Style x:Key="SettingsTabControlStyle" TargetType="TabControl">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -91,6 +100,57 @@
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Padding" Value="14,11"/>
         </Style>
+        <Style x:Key="DeviceConnectionStatusStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Style.Triggers><DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="True"><Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/></DataTrigger></Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="PlcTechnicalTemplate">
+            <StackPanel>
+                <Border Margin="0,18,0,0" Style="{StaticResource CardStyle}" Padding="22"><StackPanel><TextBlock Text="{DynamicResource PlcTech.Send}" FontSize="17" FontWeight="SemiBold"/>
+<TextBlock Margin="0,16,0,0" Text="{DynamicResource PlcTech.SendFraming}" FontWeight="SemiBold"/>
+<ComboBox Margin="0,7,0,0" ItemsSource="{Binding PlcFramingOptions}" SelectedItem="{Binding SelectedPlcFraming}"/>
+
+                        <TextBlock Margin="0,18,0,0" Text="{DynamicResource Plc.RejectMode}" FontWeight="SemiBold"/>
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <RadioButton x:Name="PlcFixedModeRadio" GroupName="PlcRejectMode" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,8" IsChecked="{Binding IsFixedPlcRejectMode}">
+                                <TextBlock Text="{DynamicResource Plc.FixedMode}" TextWrapping="Wrap"/>
+                            </RadioButton>
+                            <RadioButton x:Name="PlcIndexModeRadio" Grid.Column="2" GroupName="PlcRejectMode" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,8" IsChecked="{Binding IsIndexedPlcRejectMode}">
+                                <TextBlock Text="{DynamicResource Plc.IndexedMode}" TextWrapping="Wrap"/>
+                            </RadioButton>
+                        </Grid>
+
+
+                        <TextBlock Text="{DynamicResource Automation.IndexHint}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/>
+<TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Timeout}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Ready}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.ReadyCommand, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Hold}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.HoldCommand, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Full}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.FullCommand, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Fault}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.FaultCommand, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,12,0,7" Text="{DynamicResource Automation.Stopped}" FontWeight="SemiBold"/><TextBox Text="{Binding Automation.StopCommand, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Margin="0,16,0,0" Text="{DynamicResource PlcTech.SyncReply}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/></StackPanel></Border>
+                <TextBlock Margin="0,18,0,0" Text="{DynamicResource PlcTech.Sensors}" FontSize="17" FontWeight="SemiBold"/>
+                <TextBlock Margin="0,5,0,0" Text="{DynamicResource PlcTech.SensorHint}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/>
+                <TabControl x:Name="PlcSensorTabs" ItemsSource="{Binding PlcSensors}" Margin="0,10,0,0" SelectedIndex="0">
+                    <TabControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}"/></DataTemplate></TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate><DataTemplate>
+                        <Border Margin="0,12,0,0" Style="{StaticResource CardStyle}" Padding="22"><StackPanel>
+                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,16"/>
+                            <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.DelaySensor}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="5" Text="{Binding DelayDistance, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="mm" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding DelayDistanceError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.DisableSensor}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="5" Text="{Binding IgnoreDistance, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="mm" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding IgnoreDistanceError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.PulseEncoder}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="5" Text="{Binding PulseCount, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="ppr" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding PulseCountError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.EncoderDiameter}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="6" Text="{Binding EncoderDiameter, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="mm" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding EncoderDiameterError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.Gap}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="5" Text="{Binding Gap, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="mm" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding GapError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12"><TextBlock Text="{DynamicResource Plc.ErrorCondition}" FontWeight="SemiBold"/><Grid Margin="0,7,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox MaxLength="5" Text="{Binding ErrorCondition, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/><TextBlock Grid.Column="1" Margin="8,0,0,0" Text="Unit" VerticalAlignment="Center"/></Grid><TextBlock Text="{Binding ErrorConditionError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" FontSize="11"/></StackPanel>
+                            </Grid>
+                        </StackPanel></Border>
+                    </DataTemplate></TabControl.ContentTemplate>
+                </TabControl>
+                <Border Margin="0,18,0,0" Style="{StaticResource CardStyle}" Padding="22"><StackPanel>
+                    <TextBlock Text="{DynamicResource PlcTech.Receive}" FontSize="17" FontWeight="SemiBold"/>
+                    <TextBlock Margin="0,16,0,7" Text="{DynamicResource PlcTech.SyncRequest}" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding PlcSynchronizationRequest, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBlock Margin="0,12,0,0" Text="{DynamicResource PlcTech.ReceiveHint}" TextWrapping="Wrap" Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel></Border>
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{StaticResource PageBrush}">
@@ -290,6 +350,130 @@
                         </Border>
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+
+            <TabItem x:Name="CameraSettingsTab" Visibility="{Binding CanUseCamera, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TabItem.Header>
+                    <StackPanel Width="132"
+                                Margin="4,8"
+                                Orientation="Horizontal">
+                        <svgc:SvgIcon Width="20" Height="20"
+                                      UriSource="pack://application:,,,/GH-Net;component/Assets/camera.svg"
+                                      Fill="Transparent"
+                                      Stroke="{StaticResource TextBrush}"/>
+                        <TextBlock Margin="10,0,0,0"
+                                   Text="{DynamicResource Common.Camera}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,22"
+                                IsEnabled="{Binding CanEdit}">
+                        <TextBlock Text="{DynamicResource Common.Camera}"
+                                   Style="{StaticResource SectionTitleStyle}"/>
+
+                        <Border Margin="0,16,0,0"
+                                Style="{StaticResource CardStyle}"
+                                Padding="22">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="145"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Settings.Ip}"
+                                                   FontWeight="SemiBold"/>
+                                        <TextBox Margin="0,7,0,0"
+                                                 Text="{Binding CameraIp,
+                                                     UpdateSourceTrigger=PropertyChanged}"
+                                                 MaxLength="15"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="{DynamicResource Settings.Port}"
+                                                   FontWeight="SemiBold"/>
+                                        <TextBox Margin="0,7,0,0"
+                                                 Text="{Binding CameraPort,
+                                                     UpdateSourceTrigger=PropertyChanged}"
+                                                 MaxLength="5"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,18,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Settings.CameraTerminator}"
+                                                   FontWeight="SemiBold"/>
+                                        <ComboBox Margin="0,7,0,0"
+                                                  ItemsSource="{Binding CameraTerminatorOptions}"
+                                                  SelectedItem="{Binding CameraTerminator}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,18,0,0" Style="{StaticResource CardStyle}" Padding="22">
+                            <StackPanel><TextBlock Text="{DynamicResource Automation.NoRead}" FontWeight="SemiBold"/><TextBox Margin="0,7,0,0" Text="{Binding Automation.NoReadToken, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                        </Border>
+                        <Grid Margin="0,18,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="0"/>
+                                    <ColumnDefinition Width="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Padding="12,9"
+                                    CornerRadius="6"
+                                    Background="#EEF2F6">
+                                <TextBlock x:Name="CameraConnectionStatus" Text="{Binding CameraStatusMessage}" TextWrapping="Wrap" Tag="{Binding CameraStatusTone}" Style="{StaticResource DeviceStatusTextStyle}"/>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem x:Name="PlcSettingsTab" Visibility="{Binding CanUsePlc, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TabItem.Header><StackPanel Width="132" Margin="4,8" Orientation="Horizontal">
+                    <svgc:SvgIcon Width="20" Height="20" UriSource="pack://application:,,,/GH-Net;component/Assets/plc.svg" Fill="Transparent" Stroke="{StaticResource TextBrush}"/>
+                    <TextBlock Margin="10,0,0,0" Text="PLC" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel></TabItem.Header>
+                <ScrollViewer x:Name="PlcSettingsScroll" VerticalScrollBarVisibility="Auto"><StackPanel Margin="28,22">
+                    <TextBlock Text="PLC" FontSize="18" FontWeight="SemiBold"/>
+                    <Border Margin="0,16,0,0" Style="{StaticResource CardStyle}" Padding="22"><StackPanel>
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="145"/></Grid.ColumnDefinitions>
+                            <StackPanel><TextBlock Text="{DynamicResource Settings.Ip}" FontWeight="SemiBold"/>
+                                <TextBox Margin="0,7,0,0" MaxLength="15" Text="{Binding PlcIp, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                            <StackPanel Grid.Column="2"><TextBlock Text="{DynamicResource Settings.Port}" FontWeight="SemiBold"/>
+                                <TextBox Margin="0,7,0,0" MaxLength="5" Text="{Binding PlcPort, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                        </Grid>
+                    </StackPanel></Border>
+
+                    <Border Margin="0,18,0,0" Style="{StaticResource SettingsStatusStyle}"><StackPanel>
+                        <TextBlock Text="{DynamicResource PlcTech.LockedHint}" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button Content="{DynamicResource PlcTech.Unlock}" Click="TechnicalAccess_Click">
+                                <Button.Style><Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}"><Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTechnicalUnlocked}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+                                </Style.Triggers></Style></Button.Style>
+                            </Button>
+                            <Button Content="{DynamicResource PlcTech.Lock}" Click="LockTechnical_Click" Style="{StaticResource SecondaryButtonStyle}" Visibility="{Binding IsTechnicalUnlocked, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </StackPanel></Border>
+                    <ContentControl x:Name="PlcTechnicalHost">
+                        <ContentControl.Style><Style TargetType="ContentControl">
+                            <Setter Property="Content" Value="{x:Null}"/>
+                            <Setter Property="ContentTemplate" Value="{x:Null}"/>
+                            <Style.Triggers><DataTrigger Binding="{Binding IsTechnicalUnlocked}" Value="True">
+                                <Setter Property="Content" Value="{Binding}"/>
+                                <Setter Property="ContentTemplate" Value="{StaticResource PlcTechnicalTemplate}"/>
+                            </DataTrigger></Style.Triggers>
+                        </Style></ContentControl.Style>
+                    </ContentControl>
+                    <Border Margin="0,18,0,0" Padding="12,9" CornerRadius="6" Background="#EEF2F6">
+                        <TextBlock x:Name="PlcConnectionStatus" Text="{Binding PlcStatusMessage}" TextWrapping="Wrap" Tag="{Binding PlcStatusTone}" Style="{StaticResource DeviceStatusTextStyle}"/>
+                    </Border>
+                </StackPanel></ScrollViewer>
             </TabItem>
         </TabControl>
 

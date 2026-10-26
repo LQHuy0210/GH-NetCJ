@@ -28,3 +28,7 @@ GH-Net (WPF/MVVM/DI)
 
 The packing implementation is the only application pipeline. Stale-symbol, DI and resource
 audits prevent removed template behavior from being reintroduced.
+
+## Automation extension
+
+Repository owns ZRP-derived camera/PLC TCP adapters and bounded decoders. Service owns AutomationService, persisted configuration, command intent/outcome audit, runtime source routing and failure pause. Core owns packing mode validation. WPF adds immutable mode selection and separate localized Camera and PLC Settings tabs. See [AUTOMATION.md](AUTOMATION.md).

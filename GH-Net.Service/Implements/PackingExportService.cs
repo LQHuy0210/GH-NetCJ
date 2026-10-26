@@ -45,26 +45,31 @@ public sealed class PackingExportService(IUnitOfWorkFactory factory) : IPackingE
         var pallets = await uow.Repository<Pallet>().Query().AsNoTracking().Where(x => x.JobId == jobId).OrderBy(x => x.SourceRowIndex).ToListAsync(ct);
         var scans = await uow.Repository<ScanEvent>().Query().AsNoTracking().Where(x => x.JobId == jobId).OrderBy(x => x.Id).ToListAsync(ct);
         var prints = await uow.Repository<PrintAttempt>().Query().AsNoTracking().Where(x => x.JobId == jobId).OrderBy(x => x.Id).ToListAsync(ct);
-        await tx.CommitAsync(ct); return new(job, products, cartons, pallets, scans, prints);
+        var lineEvents = await uow.Repository<LineEvent>().Query().AsNoTracking().Where(x => x.JobId == jobId).OrderBy(x => x.Id).ToListAsync(ct);
+        await tx.CommitAsync(ct); return new(job, products, cartons, pallets, scans, prints, lineEvents);
     }
 
     private static IReadOnlyList<SheetData> Sheets(Snapshot s, PackingExportRequest request)
     {
         if (request.Scope == PackingExportScope.UnusedCodes) return UnusedCodeSheets(s, request.CodeSelection);
         var cartonCodes = s.Cartons.ToDictionary(x => x.Id, x => x.Code); var palletCodes = s.Pallets.ToDictionary(x => x.Id, x => x.Code);
-        return
+        List<SheetData> sheets =
         [
             new("Job", ["Field","Value"],
             [
-                ["JobId",s.Job.Id], ["Name",s.Job.Name], ["Status",s.Job.Status.ToString()], ["Workflow",s.Job.PackingWorkflowState.ToString()], ["CreatedAt",s.Job.CreatedAt], ["StartedAt",s.Job.StartedAt], ["StoppedAt",s.Job.StoppedAt], ["CompletedAt",s.Job.CompletedAt],
+                ["Mode",s.Job.Mode.ToString()], ["UsePlc",s.Job.UsePlc], ["LastCameraSequence",s.Job.LastCameraSequence], ["JobId",s.Job.Id], ["Name",s.Job.Name], ["Status",s.Job.Status.ToString()], ["Workflow",s.Job.PackingWorkflowState.ToString()], ["CreatedAt",s.Job.CreatedAt], ["StartedAt",s.Job.StartedAt], ["StoppedAt",s.Job.StoppedAt], ["CompletedAt",s.Job.CompletedAt],
                 ["ProductsPerCarton",s.Job.ProductsPerCarton], ["CartonsPerPallet",s.Job.CartonsPerPallet], ["ProductCsv",s.Job.ProductCsvFileName], ["ProductColumn",s.Job.ProductCodeColumn], ["CartonCsv",s.Job.CartonCsvFileName], ["CartonColumn",s.Job.CartonCodeColumn], ["PalletCsv",s.Job.PalletCsvFileName], ["PalletColumn",s.Job.PalletCodeColumn]
             ]),
             new("Products", ["Id","SourceRow","Code","Status","CartonCode","ScannedAt","PackedAt"], s.Products.Select(x => new object?[]{x.Id,x.SourceRowIndex,x.Code,x.Status.ToString(),x.CartonId is int id && cartonCodes.TryGetValue(id,out var c)?c:null,x.ScannedAt,x.PackedAt}).ToList()),
             new("Cartons", ["Id","SourceRow","Sequence","Code","Status","ProductCount","PalletCode","FillingStartedAt","PrintedAt","CompletedAt","PrintCount"], s.Cartons.Select(x => new object?[]{x.Id,x.SourceRowIndex,x.Sequence,x.Code,x.Status.ToString(),x.ProductCount,x.PalletId is int id && palletCodes.TryGetValue(id,out var p)?p:null,x.FillingStartedAt,x.PrintedAt,x.CompletedAt,x.PrintCount}).ToList()),
             new("Pallets", ["Id","SourceRow","Sequence","Code","Status","CartonCount","FillingStartedAt","PrintedAt","CompletedAt","PrintCount"], s.Pallets.Select(x => new object?[]{x.Id,x.SourceRowIndex,x.Sequence,x.Code,x.Status.ToString(),x.CartonCount,x.FillingStartedAt,x.PrintedAt,x.CompletedAt,x.PrintCount}).ToList()),
-            new("ScanEvents", ["Id","ScannedCode","ExpectedType","Result","Detail","CreatedAt"], s.Scans.Select(x => new object?[]{x.Id,x.ScannedCode,x.ExpectedCodeType.ToString(),x.ResultCode.ToString(),x.Detail,x.CreatedAt}).ToList()),
+            new("ScanEvents", ["Id","ScannedCode","ExpectedType","Result","Detail","CreatedAt","Source","CameraSequence"], s.Scans.Select(x => new object?[]{x.Id,x.ScannedCode,x.ExpectedCodeType.ToString(),x.ResultCode.ToString(),x.Detail,x.CreatedAt,x.Source,x.CameraSequence}).ToList()),
             new("PrintAttempts", ["Id","TargetType","TargetCode","AttemptNumber","Succeeded","Error","CreatedAt","ZplSnapshot"], s.PrintAttempts.Select(x => new object?[]{x.Id,x.CartonId.HasValue?"Carton":"Pallet",x.CartonId is int cid && cartonCodes.TryGetValue(cid,out var c)?c:x.PalletId is int pid && palletCodes.TryGetValue(pid,out var p)?p:null,x.AttemptNumber,x.Succeeded,x.Error,x.CreatedAt,x.ZplSnapshot}).ToList())
         ];
+        if (s.Job.UsePlc || s.LineEvents.Count > 0)
+            sheets.Add(new("LineEvents", ["Id","Kind","Payload","Outcome","Error","CameraSequence","CreatedAt","SentAt"],
+                s.LineEvents.Select(x => new object?[]{x.Id,x.Kind,x.Payload,x.Outcome,x.Error,x.CameraSequence,x.CreatedAt,x.SentAt}).ToList()));
+        return sheets;
     }
 
     private static IReadOnlyList<SheetData> UnusedCodeSheets(Snapshot s, PackingCodeSelection selection)
@@ -116,6 +121,6 @@ public sealed class PackingExportService(IUnitOfWorkFactory factory) : IPackingE
     private static string ColumnName(int n){var s="";while(n>0){n--;s=(char)('A'+n%26)+s;n/=26;}return s;}
     private static string Text(object? x)=>x switch{null=>"",DateTime d=>d.ToString("O"),_=>Convert.ToString(x,CultureInfo.InvariantCulture)??""};
     private static string Csv(string value)=>value.IndexOfAny([',','"','\r','\n'])<0?value:$"\"{value.Replace("\"","\"\"")}\"";
-    private sealed record Snapshot(Job Job,IReadOnlyList<Product> Products,IReadOnlyList<Carton> Cartons,IReadOnlyList<Pallet> Pallets,IReadOnlyList<ScanEvent> Scans,IReadOnlyList<PrintAttempt> PrintAttempts);
+    private sealed record Snapshot(Job Job,IReadOnlyList<Product> Products,IReadOnlyList<Carton> Cartons,IReadOnlyList<Pallet> Pallets,IReadOnlyList<ScanEvent> Scans,IReadOnlyList<PrintAttempt> PrintAttempts,IReadOnlyList<LineEvent> LineEvents);
     private sealed record SheetData(string Name,IReadOnlyList<string> Headers,IReadOnlyList<object?[]> Rows);
 }

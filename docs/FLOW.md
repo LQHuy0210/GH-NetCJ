@@ -44,3 +44,7 @@ of the final full Pallet completes the Job.
 The operator may export the complete Job or unused codes. Unused export accepts any combination
 of Product, Carton and Pallet and includes only exact `Available` rows. Excel and CSV-ZIP use the
 same read-only snapshot and selection rules.
+
+## Manual and semi-automatic routing — 26/10/2026
+
+Job mode selects scanner Product input or camera Product input. Scanner confirms all container labels. PLC HOLD/READY/FULL/FAULT/STOP follows committed workflow; invalid camera results send ZRP REJECT/Index. Required device loss or camera overrun pauses the Job. See [AUTOMATION.md](AUTOMATION.md).

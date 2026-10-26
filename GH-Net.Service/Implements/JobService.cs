@@ -73,7 +73,9 @@ public sealed class JobService : IJobService
     {
         var jobs = await _uow.Repository<Job>().Query().Where(x => x.Status == JobStatus.Running).ToListAsync(ct).ConfigureAwait(false);
         foreach (var job in jobs) { job.Status = JobStatus.Paused; job.StoppedAt = DateTime.Now; }
-        if (jobs.Count > 0) await _uow.SaveChangesAsync(ct).ConfigureAwait(false);
+        var pending = await _uow.Repository<LineEvent>().Query().Where(x => x.Outcome == "Pending").ToListAsync(ct).ConfigureAwait(false);
+        foreach (var item in pending) { item.Outcome = "Unknown"; item.Error = "Application interrupted; command is not replayed. Reconcile the physical line before restarting."; }
+        if (jobs.Count > 0 || pending.Count > 0) await _uow.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
     public async Task DeleteJobAsync(int jobId, CancellationToken ct = default)

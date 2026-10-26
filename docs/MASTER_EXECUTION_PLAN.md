@@ -29,3 +29,11 @@
 For every template artifact, record retained behavior, replacement code/test and evidence. Search C#,
 XAML, DI, resources, migration/snapshot, project files, tools, packaging and documentation before
 explicit removal. Legacy tables remain until scanner, printer, runtime and WPF replacements pass.
+
+## Automation extension — 26/10/2026
+
+- [x] Reuse ZRP TCP camera/PLC framing and reject codecs.
+- [x] Add manual/semi-automatic modes, source routing, line commands and audit/export.
+- [x] Add localized settings and mode selection.
+- [x] Add AutomationSmoke.
+- [ ] Physical camera/PLC/line acceptance per AUTOMATION.md.

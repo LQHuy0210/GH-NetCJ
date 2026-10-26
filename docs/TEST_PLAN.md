@@ -45,3 +45,20 @@
 5. Disconnect each device and exercise explicit recovery/reprint.
 6. Interrupt/restart at WaitingPrint and WaitingConfirmation.
 7. Compare physical labels, traceability, full-Job export and selected unused-code export in both formats.
+
+## Camera/PLC extension — 26/10/2026
+
+Run AutomationSmoke and TechnicalSettingsSmoke in addition to the ten original suites. AutomationSmoke covers real localhost TCP camera/PLC transport, both modes/all framing variants, fixed/Index reject, PLC001, input isolation, no-read/duplicate/overrun, device loss, Stop/resume, licenses, locked settings and command audit/export. TechnicalSettingsSmoke covers encrypted local access setup and lifecycle. Additional Hercules and physical-line scenarios are documented in [AUTOMATION.md](AUTOMATION.md).
+
+## Executed verification — 26/10/2026
+
+- Release solution build: 0 warnings, 0 errors.
+- All 12 suites in tools/Run-PackingSmoke.ps1 passed, including AutomationSmoke and TechnicalSettingsSmoke.
+- WPF --self-test passed with Create Job and Settings window construction.
+- Framework-dependent win-x64 publish and published --self-test passed.
+- EF model matches the single fresh PackingInitial migration; git diff --check passed.
+- Some existing smoke projects emit CS0067 warnings for unused fake-device events.
+- Camera/PLC checks used real localhost TCP sockets and simulated devices, not physical
+  hardware and not a manually operated Hercules session. Physical acceptance remains open.
+
+Camera/PLC Settings separation: AutomationSmoke verifies independent partial saves, per-device licensing, offline isolation, sensor-value persistence, locked-field preservation and no sensor/actuation send on Apply. DirectWpfSmoke checks the two protected sensor tabs and localized L/H/P/D/G/E fields. Technical PLC access checks cover user-defined encrypted credential storage, expiry, cooldown, restart lockout and fail-closed storage; the WPF smoke checks that protected controls exist only in the unlocked template and that the screen distinguishes send from receive. Physical PLC acceptance and operator handover remain to be completed on site.

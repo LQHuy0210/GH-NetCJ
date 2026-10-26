@@ -18,6 +18,14 @@
                         <StackPanel Grid.Column="4"><TextBlock Text="{DynamicResource Create.CartonsPerPallet}" FontWeight="SemiBold"/><TextBox Text="{Binding CartonsPerPallet, UpdateSourceTrigger=PropertyChanged}" Margin="0,7,0,0"/></StackPanel>
                     </Grid>
                 </Border>
+                <Border Style="{StaticResource CardStyle}" Padding="18" Margin="0,14,0,0">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Automation.Mode}" FontWeight="SemiBold"/>
+                        <CheckBox Margin="0,12,0,0" Content="{DynamicResource Automation.SemiAutomatic}" IsChecked="{Binding SemiAutomatic, Mode=TwoWay}"/>
+                        <CheckBox Margin="0,10,0,0" Content="{DynamicResource Automation.UsePlc}" IsChecked="{Binding UsePlc, Mode=TwoWay}" IsEnabled="{Binding CanChoosePlc}"/>
+                        <TextBlock Margin="0,10,0,0" Text="{DynamicResource Automation.ModeHint}" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
                 <ItemsControl Margin="0,14,0,0">
                     <ItemsControl.Items>
                         <Grid Tag="Product"><Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions><TextBlock Text="{DynamicResource Create.ProductCsv}" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Grid.Column="1" ToolTip="{Binding Products.FilePath}" Click="ChooseProduct_Click" Margin="10,0"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}"><Setter Property="Content" Value="{Binding Products.FileName}"/><Style.Triggers><DataTrigger Binding="{Binding Products.FilePath}" Value=""><Setter Property="Content" Value="{DynamicResource Create.ChooseCsv}"/></DataTrigger></Style.Triggers></Style></Button.Style></Button><ComboBox Grid.Column="2" ItemsSource="{Binding Products.Headers}" SelectedItem="{Binding Products.SelectedColumn}"/></Grid>

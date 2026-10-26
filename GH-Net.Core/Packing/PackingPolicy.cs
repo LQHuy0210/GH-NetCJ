@@ -7,6 +7,13 @@ public sealed record FullPackingPlan(int ProductCount, int RequiredCartons, int 
 /// <summary>Pure packing rules shared by services, UI validation and smoke tests.</summary>
 public static class PackingPolicy
 {
+    public static void ValidateMode(PackingMode mode, bool usePlc)
+    {
+        if (!Enum.IsDefined(mode)) throw new InvalidOperationException("Invalid packing mode.");
+        if (mode == PackingMode.SemiAutomatic && !usePlc)
+            throw new InvalidOperationException("Semi-automatic packing requires PLC control.");
+    }
+
     public static bool IsCartonFull(int productCount, int productsPerCarton)
     {
         ValidateCount(productCount, nameof(productCount));

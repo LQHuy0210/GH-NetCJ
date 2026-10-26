@@ -5,6 +5,9 @@ public class Job
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int TotalData { get; set; }
+    public PackingMode Mode { get; set; }
+    public bool UsePlc { get; set; }
+    public long LastCameraSequence { get; set; }
     public JobStatus Status { get; set; } = JobStatus.NewlyCreated;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? StartedAt { get; set; }

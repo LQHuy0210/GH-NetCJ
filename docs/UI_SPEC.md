@@ -38,3 +38,9 @@ Cartons/Pallets are confirmed `Completed` units. Remaining is the imported total
 Traceability searches exact Product/Carton/Pallet code and groups duplicate codes by Job. Export is
 a separate action supporting Excel and CSV ZIP. The operator chooses the complete Job or unused
 codes, then any combination of Product, Carton and Pallet; all three are selected by default.
+
+## Automation UI — 26/10/2026
+
+Create Job adds semi-automatic mode and Use PLC (default on in the UI, mandatory for semi-automatic). Operator header shows the immutable mode. Settings has separate Camera and PLC tabs with their own endpoint fields, live connection statuses and messages. Apply saves/connects only the selected device without test actuation; draft changes in the other tab are not applied. All labels exist in vi-VN/en-US.
+
+Camera/PLC forms use the ZRP visual style with CJ-specific scope. Camera framing and no-read token are basic settings. In the PLC tab, the locked operator view shows only the endpoint, connection state, and a read-only summary separating PC-to-PLC sends from PLC-to-PC receives. The protected technical section is absent from the visual/accessibility tree until unlocked, then exposes framing, compatibility mode, timeout, command payloads, and Sensor 1/Sensor 2 tabs with L/H/P/D/G/E settings. Sensor values persist locally and are not transmitted by Apply. Unlock uses a technician-created local code; it expires after five minutes, leaving the PLC tab, or closing Settings. Mandatory invalid/duplicate rejection has no disable switch.

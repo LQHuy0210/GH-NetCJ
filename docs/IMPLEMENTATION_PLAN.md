@@ -78,3 +78,7 @@ one fresh `PackingInitial` migration.
 Status: automated and packaged verification completed 14/08/2026. Clean restore, Release build,
 all replacement smoke suites, framework-dependent `win-x64` publish and packaged `--self-test`
 passed. Real Zebra hardware acceptance remains a separate customer/operator activity.
+
+## Camera/PLC extension — 26/10/2026
+
+Implemented TCP camera/PLC adapters from ZRP, immutable modes, licensed Start preflight, line command/audit integration, settings/localization and AutomationSmoke. Transport verification is separate from physical acceptance; see [AUTOMATION.md](AUTOMATION.md).

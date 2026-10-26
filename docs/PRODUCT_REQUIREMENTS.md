@@ -1,5 +1,14 @@
 # Product requirements
 
+## Camera/PLC extension — 26/10/2026
+
+The user authorized manual and semi-automatic operation using GHNet-ZRP camera/PLC TCP
+connections. [AUTOMATION.md](AUTOMATION.md) defines the implemented transport, framing,
+mode/source policy, configurable line commands, failure behavior and hardware acceptance.
+Manual Jobs may use PLC lamps; semi-automatic Jobs require camera plus PLC. Scanner
+continues confirming Carton/Pallet labels. Device models are not fixed; protocol conformance
+and physical acceptance remain required. Product printing remains out of scope.
+
 ## Confirmed scope
 
 - Modify this repository in place and retain its architecture, branding and licensing.
@@ -57,3 +66,7 @@
 Implementation, automated verification, package verification and real-device acceptance are
 reported separately. Production acceptance requires the customer/operator to complete the
 scenarios in `TEST_PLAN.md` on actual Zebra hardware.
+
+## Confirmed settings scope — 26/10/2026
+
+Use the ZRP visual style with CJ requirements: independent camera/PLC tabs; mandatory rejection of invalid/duplicate camera results; two protected ZRP-style sensor setting panels; no optional error bypass. Sensor settings persist locally, while their transmission to the PLC remains out of scope until the PLC program contract is confirmed. Index compatibility and CJ line payloads are advanced settings. See AUTOMATION.md.

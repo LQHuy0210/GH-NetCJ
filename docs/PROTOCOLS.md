@@ -22,3 +22,7 @@ deferred until the Zebra model is available.
 
 Codes containing ZPL command control characters (`^`, `~`, CR, LF or NUL) are rejected by the
 current renderer rather than inserted into `^FD` unsafely.
+
+## Camera and PLC — 26/10/2026
+
+See [AUTOMATION.md](AUTOMATION.md) for ZRP UTF-8 camera framing, PLC ASCII REJECT/Index, PLC001 synchronization, configurable CJ lamp/admission payloads and Hercules instructions. Both devices are TCP servers. No Modbus dependency or vendor SDK has been introduced. SentToSocket is not physical actuation acknowledgement.

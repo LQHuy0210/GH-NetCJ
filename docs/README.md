@@ -18,5 +18,7 @@ Read in order:
 10. `LICENSE_AND_RELEASE.md`
 11. `MASTER_EXECUTION_PLAN.md`
 
+12. `AUTOMATION.md` — 26/10/2026 camera/PLC extension and Hercules acceptance.
+
 Requirement states are `Confirmed`, `Assumed`, `Blocked`, `Rejected` and `Deferred`.
 Repository-root pointers must not override this documentation.

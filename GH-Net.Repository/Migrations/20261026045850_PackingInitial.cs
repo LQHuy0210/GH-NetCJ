@@ -12,6 +12,34 @@ namespace GH_Net.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AutomationConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CameraIp = table.Column<string>(type: "TEXT", nullable: false),
+                    CameraPort = table.Column<int>(type: "INTEGER", nullable: false),
+                    CameraTerminator = table.Column<string>(type: "TEXT", nullable: false),
+                    NoReadToken = table.Column<string>(type: "TEXT", nullable: false),
+                    PlcIp = table.Column<string>(type: "TEXT", nullable: false),
+                    PlcPort = table.Column<int>(type: "INTEGER", nullable: false),
+                    Framing = table.Column<int>(type: "INTEGER", nullable: false),
+                    RejectMode = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReadyCommand = table.Column<string>(type: "TEXT", nullable: false),
+                    HoldCommand = table.Column<string>(type: "TEXT", nullable: false),
+                    FullCommand = table.Column<string>(type: "TEXT", nullable: false),
+                    FaultCommand = table.Column<string>(type: "TEXT", nullable: false),
+                    StopCommand = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeoutMs = table.Column<int>(type: "INTEGER", nullable: false),
+                    Sensors = table.Column<string>(type: "TEXT", nullable: false,
+                        defaultValue: "[{\"Number\":1,\"DelayDistance\":0,\"IgnoreDistance\":0,\"PulseCount\":3600,\"EncoderDiameter\":51,\"Gap\":0,\"ErrorCondition\":0},{\"Number\":2,\"DelayDistance\":0,\"IgnoreDistance\":0,\"PulseCount\":3600,\"EncoderDiameter\":51,\"Gap\":0,\"ErrorCondition\":0}]")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AutomationConfigs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
@@ -19,6 +47,9 @@ namespace GH_Net.Repository.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     TotalData = table.Column<int>(type: "INTEGER", nullable: false),
+                    Mode = table.Column<int>(type: "INTEGER", nullable: false),
+                    UsePlc = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LastCameraSequence = table.Column<long>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -88,6 +119,32 @@ namespace GH_Net.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LineEvents",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    JobId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CameraSequence = table.Column<long>(type: "INTEGER", nullable: true),
+                    Kind = table.Column<string>(type: "TEXT", nullable: false),
+                    Payload = table.Column<string>(type: "TEXT", nullable: false),
+                    Outcome = table.Column<string>(type: "TEXT", nullable: false),
+                    Error = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LineEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LineEvents_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pallets",
                 columns: table => new
                 {
@@ -124,6 +181,8 @@ namespace GH_Net.Repository.Migrations
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     JobId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Source = table.Column<string>(type: "TEXT", nullable: false),
+                    CameraSequence = table.Column<long>(type: "INTEGER", nullable: true),
                     ScannedCode = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     ExpectedCodeType = table.Column<int>(type: "INTEGER", nullable: false),
                     ResultCode = table.Column<int>(type: "INTEGER", nullable: false),
@@ -283,6 +342,11 @@ namespace GH_Net.Repository.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LineEvents_JobId_CreatedAt",
+                table: "LineEvents",
+                columns: new[] { "JobId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pallets_JobId_Code",
                 table: "Pallets",
                 columns: new[] { "JobId", "Code" },
@@ -339,6 +403,12 @@ namespace GH_Net.Repository.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AutomationConfigs");
+
+            migrationBuilder.DropTable(
+                name: "LineEvents");
+
             migrationBuilder.DropTable(
                 name: "PrintAttempts");
 

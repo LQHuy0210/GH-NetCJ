@@ -20,3 +20,5 @@ clean restore/build, all packing smoke suites, publish and the packaged `--self-
 Production release acceptance still requires the real Zebra scanner/printer checklist in
 `TEST_PLAN.md`. Production endpoint and ZPL template values remain configurable settings and are
 never hard-coded source values.
+
+Camera/PLC Jobs additionally enforce Plc=8 when UsePlc is selected and Camera=2 for SemiAutomatic. Existing bit assignments are preserved. Test transport compatibility with Hercules and complete the additional physical acceptance checklist in AUTOMATION.md before production release.

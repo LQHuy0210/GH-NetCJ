@@ -2,7 +2,7 @@
  <Grid Margin="28,20"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="*"/></Grid.RowDefinitions>
   <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <Button Width="80" Content="← Back" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding BackCommand}"/>
-   <StackPanel Grid.Column="2"><TextBlock Text="{Binding JobName, Mode=OneWay}" FontSize="24" FontWeight="Bold"/><TextBlock><Run Text="{Binding StatusText, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Workflow, Mode=OneWay}"/></TextBlock></StackPanel>
+   <StackPanel Grid.Column="2"><TextBlock Text="{Binding JobName, Mode=OneWay}" FontSize="24" FontWeight="Bold"/><TextBlock><Run Text="{Binding StatusText, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding Workflow, Mode=OneWay}"/><Run Text=" · "/><Run Text="{Binding ModeText, Mode=OneWay}"/></TextBlock></StackPanel>
    <StackPanel x:Name="HeaderActions" Grid.Column="3" Orientation="Horizontal">
     <Button Width="42" Height="40" Padding="9" ToolTip="{DynamicResource Packing.Trace}" ToolTipService.ShowOnDisabled="True" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding TraceCommand}">
      <svgc:SvgIcon Width="20" Height="20" UriSource="pack://application:,,,/GH-Net;component/Assets/trace.svg" Fill="{StaticResource TextBrush}" Stroke="{StaticResource TextBrush}"/>

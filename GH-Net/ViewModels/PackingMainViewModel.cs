@@ -26,23 +26,35 @@ public sealed class PackingMainViewModel : ViewModelBase, IDisposable
         _runtime.SnapshotChanged += OnSnapshot; _runtime.RuntimeFailed += OnFailure; _coordinator.StatusChanged += OnStatus;
     }
     public ObservableCollection<string> RecentProducts { get; } = [];
-    public AsyncRelayCommand StartCommand { get; } public AsyncRelayCommand StopCommand { get; } public AsyncRelayCommand RetryPrintCommand { get; } public RelayCommand<object> BackCommand { get; } public RelayCommand<object> TraceCommand { get; } public RelayCommand<object> ExportCommand { get; }
+    public AsyncRelayCommand StartCommand { get; }
+    public AsyncRelayCommand StopCommand { get; }
+    public AsyncRelayCommand RetryPrintCommand { get; }
+    public RelayCommand<object> BackCommand { get; }
+    public RelayCommand<object> TraceCommand { get; }
+    public RelayCommand<object> ExportCommand { get; }
     public Action? RequestBack { get; set; }
     public Action? RequestTrace { get; set; }
     public Action<int>? RequestExport { get; set; }
-    public string JobName { get => _jobName; private set => SetProperty(ref _jobName, value); } public JobStatus Status { get => _status; private set { if (SetProperty(ref _status, value)) { OnPropertyChanged(nameof(StatusText)); Refresh(); } } }
+    public string JobName { get => _jobName; private set => SetProperty(ref _jobName, value); }
+    public JobStatus Status { get => _status; private set { if (SetProperty(ref _status, value)) { OnPropertyChanged(nameof(StatusText)); Refresh(); } } }
+    public string ModeText { get; private set; } = "";
     public string StatusText => Status.ToString(); public string Workflow { get => _workflow; private set => SetProperty(ref _workflow, value); }
-    public string CartonCode { get => _cartonCode; private set => SetProperty(ref _cartonCode, value); } public string PalletCode { get => _palletCode; private set => SetProperty(ref _palletCode, value); }
-    public int CartonCount { get => _cartonCount; private set => SetProperty(ref _cartonCount, value); } public int CartonCapacity { get => _cartonCapacity; private set => SetProperty(ref _cartonCapacity, value); }
-    public int PalletCount { get => _palletCount; private set => SetProperty(ref _palletCount, value); } public int PalletCapacity { get => _palletCapacity; private set => SetProperty(ref _palletCapacity, value); }
-    public int PackedProducts { get => _packed; private set => SetProperty(ref _packed, value); } public int TotalProducts { get => _total; private set => SetProperty(ref _total, value); }
+    public string CartonCode { get => _cartonCode; private set => SetProperty(ref _cartonCode, value); }
+    public string PalletCode { get => _palletCode; private set => SetProperty(ref _palletCode, value); }
+    public int CartonCount { get => _cartonCount; private set => SetProperty(ref _cartonCount, value); }
+    public int CartonCapacity { get => _cartonCapacity; private set => SetProperty(ref _cartonCapacity, value); }
+    public int PalletCount { get => _palletCount; private set => SetProperty(ref _palletCount, value); }
+    public int PalletCapacity { get => _palletCapacity; private set => SetProperty(ref _palletCapacity, value); }
+    public int PackedProducts { get => _packed; private set => SetProperty(ref _packed, value); }
+    public int TotalProducts { get => _total; private set => SetProperty(ref _total, value); }
     public int CheckedProducts { get => _checkedProducts; private set => SetProperty(ref _checkedProducts, value); }
     public int RemainingProducts { get => _remainingProducts; private set => SetProperty(ref _remainingProducts, value); }
     public int CheckedCartons { get => _checkedCartons; private set => SetProperty(ref _checkedCartons, value); }
     public int RemainingCartons { get => _remainingCartons; private set => SetProperty(ref _remainingCartons, value); }
     public int CheckedPallets { get => _checkedPallets; private set => SetProperty(ref _checkedPallets, value); }
     public int RemainingPallets { get => _remainingPallets; private set => SetProperty(ref _remainingPallets, value); }
-    public string Message { get => _message; private set { if (SetProperty(ref _message, value)) OnPropertyChanged(nameof(HasMessage)); } } public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
+    public string Message { get => _message; private set { if (SetProperty(ref _message, value)) OnPropertyChanged(nameof(HasMessage)); } }
+    public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
     public bool Busy { get => _busy; private set { if (SetProperty(ref _busy, value)) Refresh(); } }
     public bool CanRetryPrint { get => _retry; private set { if (SetProperty(ref _retry, value)) Refresh(); } }
     public async Task LoadAsync(int jobId)
@@ -50,6 +62,8 @@ public sealed class PackingMainViewModel : ViewModelBase, IDisposable
         _jobId = jobId;
         var job = await _jobs.GetByIdWithDetailsAsync(jobId) ?? throw new InvalidOperationException("Job not found.");
         PackingCodeStatistics statistics = await _jobs.GetPackingCodeStatisticsAsync(jobId);
+        ModeText = _language.Get(job.Mode == PackingMode.SemiAutomatic ? "Automation.SemiMode" : "Automation.Manual") + (job.UsePlc ? " · PLC" : "");
+        OnPropertyChanged(nameof(ModeText));
         JobName = job.Name;
         Status = job.Status;
         Workflow = job.PackingWorkflowState.ToString();

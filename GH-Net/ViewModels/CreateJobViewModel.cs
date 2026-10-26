@@ -53,6 +53,8 @@ public sealed class CreateJobViewModel : ViewModelBase
     private string _cartonsPerPallet = "50";
     private bool _useAutomaticName;
     private bool _isBusy;
+    private bool _semiAutomatic;
+    private bool _usePlc = true;
     private DateTime _automaticNameTimestamp;
 
     public CreateJobViewModel(
@@ -72,6 +74,18 @@ public sealed class CreateJobViewModel : ViewModelBase
     public CsvSelectionViewModel Pallets { get; }
     public Job? CreatedJob { get; private set; }
     public bool IsBusy { get => _isBusy; private set => SetProperty(ref _isBusy, value); }
+    public bool SemiAutomatic
+    {
+        get => _semiAutomatic;
+        set
+        {
+            if (!SetProperty(ref _semiAutomatic, value)) return;
+            if (value) UsePlc = true;
+            OnPropertyChanged(nameof(CanChoosePlc));
+        }
+    }
+    public bool UsePlc { get => _usePlc; set => SetProperty(ref _usePlc, SemiAutomatic || value); }
+    public bool CanChoosePlc => !SemiAutomatic;
     public string JobName { get => _jobName; set { if (SetProperty(ref _jobName, value)) _useAutomaticName = false; } }
     public string ProductsPerCarton { get => _productsPerCarton; set => SetProperty(ref _productsPerCarton, value); }
     public string CartonsPerPallet { get => _cartonsPerPallet; set => SetProperty(ref _cartonsPerPallet, value); }
@@ -103,6 +117,8 @@ public sealed class CreateJobViewModel : ViewModelBase
                 AutomaticNameTimestamp = _useAutomaticName ? _automaticNameTimestamp : null,
                 ProductsPerCarton = productCapacity,
                 CartonsPerPallet = cartonCapacity,
+                Mode = SemiAutomatic ? GH_Net.Core.Enums.PackingMode.SemiAutomatic : GH_Net.Core.Enums.PackingMode.Manual,
+                UsePlc = UsePlc,
                 Products = new PackingCsvSelection(Products.FilePath, Products.SelectedColumn!),
                 Cartons = new PackingCsvSelection(Cartons.FilePath, Cartons.SelectedColumn!),
                 Pallets = new PackingCsvSelection(Pallets.FilePath, Pallets.SelectedColumn!)

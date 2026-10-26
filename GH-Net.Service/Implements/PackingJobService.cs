@@ -20,6 +20,7 @@ public sealed class PackingJobService : IPackingJobService
     public async Task<Job> CreateAsync(CreatePackingJobRequest request, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        PackingPolicy.ValidateMode(request.Mode, request.UsePlc);
         PackingPolicy.ValidateCapacity(request.ProductsPerCarton, nameof(request.ProductsPerCarton));
         PackingPolicy.ValidateCapacity(request.CartonsPerPallet, nameof(request.CartonsPerPallet));
         if (!request.UseAutomaticName && string.IsNullOrWhiteSpace(request.Name))
@@ -58,6 +59,8 @@ public sealed class PackingJobService : IPackingJobService
                 PalletCsvFileName = Path.GetFileName(request.Pallets.FilePath),
                 PalletCodeColumn = request.Pallets.CodeColumn,
                 TotalData = products.Count,
+                Mode = request.Mode,
+                UsePlc = request.UsePlc,
                 CreatedAt = createdAt
             };
             uow.Repository<Job>().Add(job);

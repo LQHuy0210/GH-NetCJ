@@ -10,6 +10,8 @@ public sealed class CreatePackingJobRequest
     public bool UseAutomaticName { get; init; } = true;
     public DateTime? AutomaticNameTimestamp { get; init; }
     public int ProductsPerCarton { get; init; }
+    public GH_Net.Core.Enums.PackingMode Mode { get; init; }
+    public bool UsePlc { get; init; }
     public int CartonsPerPallet { get; init; }
     public required PackingCsvSelection Products { get; init; }
     public required PackingCsvSelection Cartons { get; init; }

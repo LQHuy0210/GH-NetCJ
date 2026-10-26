@@ -17,6 +17,72 @@ namespace GH_Net.Repository.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.29");
 
+            modelBuilder.Entity("GH_Net.Repository.Entities.AutomationConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CameraIp")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CameraPort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CameraTerminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FaultCommand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Framing")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FullCommand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HoldCommand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NoReadToken")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlcIp")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PlcPort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReadyCommand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RejectMode")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Sensors")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StopCommand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TimeoutMs")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AutomationConfigs", (string)null);
+                });
+
             modelBuilder.Entity("GH_Net.Repository.Entities.Carton", b =>
                 {
                     b.Property<int>("Id")
@@ -101,6 +167,12 @@ namespace GH_Net.Repository.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<long>("LastCameraSequence")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Mode")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -140,6 +212,9 @@ namespace GH_Net.Repository.Migrations
                     b.Property<int>("TotalData")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("UsePlc")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
@@ -150,6 +225,46 @@ namespace GH_Net.Repository.Migrations
                         {
                             t.HasCheckConstraint("CK_Jobs_Capacity", "ProductsPerCarton > 0 AND CartonsPerPallet > 0");
                         });
+                });
+
+            modelBuilder.Entity("GH_Net.Repository.Entities.LineEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("CameraSequence")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId", "CreatedAt");
+
+                    b.ToTable("LineEvents", (string)null);
                 });
 
             modelBuilder.Entity("GH_Net.Repository.Entities.Pallet", b =>
@@ -345,6 +460,9 @@ namespace GH_Net.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<long?>("CameraSequence")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -363,6 +481,10 @@ namespace GH_Net.Repository.Migrations
                     b.Property<string>("ScannedCode")
                         .IsRequired()
                         .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -443,6 +565,17 @@ namespace GH_Net.Repository.Migrations
                     b.Navigation("Job");
 
                     b.Navigation("Pallet");
+                });
+
+            modelBuilder.Entity("GH_Net.Repository.Entities.LineEvent", b =>
+                {
+                    b.HasOne("GH_Net.Repository.Entities.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
                 });
 
             modelBuilder.Entity("GH_Net.Repository.Entities.Pallet", b =>
