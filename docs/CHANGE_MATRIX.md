@@ -18,3 +18,10 @@ replacement gate passed. License feature assignments remain Printer=1, Camera=2,
 ZRP camera/PLC transports and framing are reused with CJ exact-code comparison. AutomationSmoke covers both Job modes, source isolation, fixed/Index rejection, line commands, failures and exports. This is a newly authorized packing integration; removed template printing/queue/reconnect behavior is not restored.
 
 The current PLC UI adds two protected ZRP-style Sensor tabs with validated L/H/P/D/G/E settings. Values persist in AutomationConfigs; the screen does not emit ZRP sensor-configuration payloads.
+
+## CJ Food diagram extension — started 10/11/2026
+
+The printer settings now have a separate Product ZPL template and test-print command, persisted
+with the `AddProductZplTemplate` migration. This is configuration groundwork only: production
+Product label sequencing/audit, scan gating against a successful print, XML ingestion, DM Code
+database/API verification, CJ result-file schema and delivery integration remain open.

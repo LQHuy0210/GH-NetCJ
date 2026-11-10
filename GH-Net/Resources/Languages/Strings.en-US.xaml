@@ -96,6 +96,8 @@ Related print data and history will also be deleted.</sys:String>
   <sys:String x:Key="Settings.ZebraPrinter">Zebra printer</sys:String>
   <sys:String x:Key="Settings.Scanner">Zebra scanner</sys:String>
   <sys:String x:Key="Settings.CartonZpl">Carton ZPL template</sys:String>
+  <sys:String x:Key="Settings.ProductZpl">Product ZPL template</sys:String>
+  <sys:String x:Key="Settings.TestProductPrint">Test Product print</sys:String>
   <sys:String x:Key="Settings.PalletZpl">Pallet ZPL template</sys:String>
   <sys:String x:Key="Settings.TestCartonPrint">Test Carton print</sys:String>
   <sys:String x:Key="Settings.TestPalletPrint">Test Pallet print</sys:String>

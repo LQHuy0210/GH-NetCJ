@@ -11,6 +11,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
 {
     private const string DefaultCartonZpl = "^XA^FO40,40^BY2^BCN,100,Y,N,N^FD{{CODE}}^FS^XZ";
     private const string DefaultPalletZpl = "^XA^FO40,40^BY3^BCN,140,Y,N,N^FD{{CODE}}^FS^XZ";
+    private const string DefaultProductZpl = "^XA^FO40,40^BY2^BCN,90,Y,N,N^FD{{CODE}}^FS^XZ";
     private readonly IJobService _jobs;
     private readonly IZebraPrinterConfigService _printer;
     private readonly IScannerConfigService _scanner;
@@ -29,6 +30,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     private string _printerPort = "9100";
     private string _cartonZplTemplate = DefaultCartonZpl;
     private string _palletZplTemplate = DefaultPalletZpl;
+    private string _productZplTemplate = DefaultProductZpl;
     private string _printerStatusMessage = string.Empty;
     private string? _selectedScannerPort;
     private int _selectedBaudRate = 9600;
@@ -54,8 +56,9 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
         ApplyPlcCommand = new AsyncRelayCommand(() => ApplyDeviceAsync(false), () => CanEdit && CanUsePlc);
         if (_automation is not null) _automation.ConnectionStateChanged += OnAutomationState;
         ApplyPrinterCommand = new AsyncRelayCommand(ApplyPrinterAsync, CanEditPrinter);
-        TestCartonPrintCommand = new AsyncRelayCommand(() => TestPrintAsync(true), CanEditPrinter);
-        TestPalletPrintCommand = new AsyncRelayCommand(() => TestPrintAsync(false), CanEditPrinter);
+        TestProductPrintCommand = new AsyncRelayCommand(() => TestPrintAsync("Product"), CanEditPrinter);
+        TestCartonPrintCommand = new AsyncRelayCommand(() => TestPrintAsync("Carton"), CanEditPrinter);
+        TestPalletPrintCommand = new AsyncRelayCommand(() => TestPrintAsync("Pallet"), CanEditPrinter);
         ApplyScannerCommand = new AsyncRelayCommand(ApplyScannerAsync, CanEditScanner);
         RefreshScannerPortsCommand = new RelayCommand<object>(_ => RefreshScannerPorts(), _ => CanEditScanner());
         _language.LanguageChanged += OnLanguageChanged;
@@ -71,6 +74,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     public AsyncRelayCommand ApplyPrinterCommand { get; }
     public AsyncRelayCommand TestCartonPrintCommand { get; }
     public AsyncRelayCommand TestPalletPrintCommand { get; }
+    public AsyncRelayCommand TestProductPrintCommand { get; }
     public AsyncRelayCommand ApplyScannerCommand { get; }
     public RelayCommand<object> RefreshScannerPortsCommand { get; }
     public bool CanUsePrinter => _license.HasFeature(LicenseFeature.Printer);
@@ -131,6 +135,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
     public string PrinterPort { get => _printerPort; set => SetProperty(ref _printerPort, value); }
     public string CartonZplTemplate { get => _cartonZplTemplate; set => SetProperty(ref _cartonZplTemplate, value); }
     public string PalletZplTemplate { get => _palletZplTemplate; set => SetProperty(ref _palletZplTemplate, value); }
+    public string ProductZplTemplate { get => _productZplTemplate; set => SetProperty(ref _productZplTemplate, value); }
     public string PrinterStatusMessage { get => _printerStatusMessage; private set => SetProperty(ref _printerStatusMessage, value); }
     public string? SelectedScannerPort { get => _selectedScannerPort; set => SetProperty(ref _selectedScannerPort, value); }
     public int SelectedBaudRate { get => _selectedBaudRate; set => SetProperty(ref _selectedBaudRate, value); }
@@ -155,6 +160,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
             PrinterPort = (printer?.Port ?? 9100).ToString();
             CartonZplTemplate = printer?.CartonZplTemplate ?? DefaultCartonZpl;
             PalletZplTemplate = printer?.PalletZplTemplate ?? DefaultPalletZpl;
+            ProductZplTemplate = printer?.ProductZplTemplate ?? DefaultProductZpl;
             PrinterStatusMessage = printer is null ? _language.Get("Settings.ZebraNotConfigured") : _language.Get("Settings.ZebraLoaded");
             RefreshScannerPorts();
             ScannerConfig? scanner = await _scanner.GetAsync();
@@ -190,6 +196,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
             {
                 Ip = PrinterIp.Trim(),
                 Port = port,
+                ProductZplTemplate = ProductZplTemplate,
                 CartonZplTemplate = CartonZplTemplate,
                 PalletZplTemplate = PalletZplTemplate,
                 ConnectTimeoutMs = 3000,
@@ -201,10 +208,10 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
         finally { IsBusy = false; }
     }
 
-    private async Task TestPrintAsync(bool carton)
+    private async Task TestPrintAsync(string labelType)
     {
         IsBusy = true;
-        try { await _printer.TestPrintAsync(carton); PrinterStatusMessage = _language.Get("Settings.TestPrintSent"); }
+        try { await _printer.TestPrintAsync(labelType); PrinterStatusMessage = _language.Get("Settings.TestPrintSent"); }
         catch (Exception exception) { PrinterStatusMessage = exception.Message; }
         finally { IsBusy = false; }
     }
@@ -243,7 +250,7 @@ public sealed class SettingsViewModel : ViewModelBase, IDisposable
 
     private void RefreshCommands()
     {
-        ApplyPrinterCommand.NotifyCanExecuteChanged(); TestCartonPrintCommand.NotifyCanExecuteChanged();
+        ApplyPrinterCommand.NotifyCanExecuteChanged(); TestProductPrintCommand.NotifyCanExecuteChanged(); TestCartonPrintCommand.NotifyCanExecuteChanged();
         TestPalletPrintCommand.NotifyCanExecuteChanged(); ApplyScannerCommand.NotifyCanExecuteChanged();
         RefreshScannerPortsCommand.NotifyCanExecuteChanged();
         ApplyCameraCommand.NotifyCanExecuteChanged();

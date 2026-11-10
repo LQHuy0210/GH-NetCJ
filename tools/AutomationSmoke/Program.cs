@@ -348,7 +348,7 @@ sealed class TestPrinterConfig : IZebraPrinterConfigService
     public Task<PrinterConfig?> GetAsync(CancellationToken ct = default) => Task.FromResult<PrinterConfig?>(new() { Ip = "127.0.0.1", Port = 9100, CartonZplTemplate = "^XA^FD{{CODE}}^FS^XZ", PalletZplTemplate = "^XA^FD{{CODE}}^FS^XZ" });
     public Task<ZebraPrinterApplyResult> ApplyAsync(PrinterConfig config, CancellationToken ct = default) => throw new NotSupportedException();
     public Task<bool> ConnectSavedAsync(CancellationToken ct = default) => Task.FromResult(true);
-    public Task TestPrintAsync(bool carton, CancellationToken ct = default) => Task.CompletedTask;
+    public Task TestPrintAsync(string labelType, CancellationToken ct = default) => Task.CompletedTask;
 }
 
 sealed class TestTechnicalAccess : ITechnicalSettingsAccess

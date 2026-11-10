@@ -37,6 +37,6 @@ consistent read transaction. Long-lived services use `IUnitOfWorkFactory`.
 
 ## Automation schema — 26/10/2026
 
-The fresh PackingInitial includes Jobs.Mode/UsePlc/LastCameraSequence, ScanEvents.Source/CameraSequence, AutomationConfigs and cascading LineEvents. LineEvents records intent before network I/O; Pending becomes Unknown after crash and is never replayed. See [AUTOMATION.md](AUTOMATION.md).
+The fresh PackingInitial includes Jobs.Mode/UsePlc/LastCameraSequence, ScanEvents.Source/CameraSequence, AutomationConfigs and cascading LineEvents. LineEvents records intent before network I/O; Pending becomes Unknown after crash and is never replayed. A follow-up `AddProductZplTemplate` migration adds the separate Product label template to PrinterConfigs. See [AUTOMATION.md](AUTOMATION.md).
 
 AutomationConfigs also persists the selected CameraTerminator and the two ZRP-style PLC sensor panels as JSON (`Sensors`). Each panel stores L/H/P/D/G/E values with defaults in the fresh `PackingInitial` migration. These values are saved for technician setup; this release does not transmit a sensor configuration message to hardware.

@@ -96,6 +96,8 @@ Dữ liệu in và lịch sử liên quan cũng sẽ bị xóa.</sys:String>
   <sys:String x:Key="Settings.ZebraPrinter">Máy in Zebra</sys:String>
   <sys:String x:Key="Settings.Scanner">Scanner Zebra</sys:String>
   <sys:String x:Key="Settings.CartonZpl">Mẫu ZPL Carton</sys:String>
+  <sys:String x:Key="Settings.ProductZpl">Mẫu ZPL Product</sys:String>
+  <sys:String x:Key="Settings.TestProductPrint">In thử Product</sys:String>
   <sys:String x:Key="Settings.PalletZpl">Mẫu ZPL Pallet</sys:String>
   <sys:String x:Key="Settings.TestCartonPrint">In thử Carton</sys:String>
   <sys:String x:Key="Settings.TestPalletPrint">In thử Pallet</sys:String>

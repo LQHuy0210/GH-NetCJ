@@ -376,6 +376,9 @@ namespace GH_Net.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProductZplTemplate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CartonZplTemplate")
                         .HasColumnType("TEXT");
 

@@ -220,6 +220,16 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource Settings.ProductZpl}" Style="{StaticResource SettingsLabelStyle}" VerticalAlignment="Bottom"/>
+                                    <Button Grid.Column="1" Content="{DynamicResource Settings.TestProductPrint}" Command="{Binding TestProductPrintCommand}" Style="{StaticResource SecondaryButtonStyle}" Padding="14,7" MinHeight="36"/>
+                                </Grid>
+                                <TextBox Text="{Binding ProductZplTemplate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" AcceptsTab="True" FontFamily="Consolas" FontSize="14" Height="112" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
+
+                                <Grid Margin="0,20,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
                                     <TextBlock Text="{DynamicResource Settings.CartonZpl}" Style="{StaticResource SettingsLabelStyle}" VerticalAlignment="Bottom"/>
                                     <Button Grid.Column="1"
                                             Content="{DynamicResource Settings.TestCartonPrint}"

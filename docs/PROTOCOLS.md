@@ -13,8 +13,10 @@ the configured Serial transport.
 ## Zebra printer — TCP/IP and ZPL
 
 The application is a TCP client using configured IP, port and timeouts. It renders application-
-managed Carton/Pallet templates by replacing the required `{{CODE}}` placeholder and sends the
-resulting ZPL bytes. A successful socket write is a print-attempt outcome, not packing confirmation.
+managed Product/Carton/Pallet templates by replacing the required `{{CODE}}` placeholder and sends
+the resulting ZPL bytes. Product now has a separate configurable template and test-print action;
+production Product label printing/scan gating is still pending. A successful socket write is a
+print-attempt outcome, not physical label verification or packing confirmation.
 
 There is no automatic retry. Each explicit Retry creates another PrintAttempt with the same
 Carton/Pallet ID. Exact printer port, encoding, label dimensions and status-query policy remain

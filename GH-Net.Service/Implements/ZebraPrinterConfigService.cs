@@ -38,6 +38,7 @@ public sealed class ZebraPrinterConfigService : IZebraPrinterConfigService
         else
         {
             existing.Ip = config.Ip; existing.Port = config.Port;
+            existing.ProductZplTemplate = config.ProductZplTemplate;
             existing.CartonZplTemplate = config.CartonZplTemplate;
             existing.PalletZplTemplate = config.PalletZplTemplate;
             existing.ConnectTimeoutMs = config.ConnectTimeoutMs; existing.SendTimeoutMs = config.SendTimeoutMs;
@@ -61,27 +62,34 @@ public sealed class ZebraPrinterConfigService : IZebraPrinterConfigService
             TimeSpan.FromMilliseconds(config.ConnectTimeoutMs), ct).ConfigureAwait(false);
     }
 
-    public async Task TestPrintAsync(bool cartonTemplate, CancellationToken ct = default)
+    public async Task TestPrintAsync(string labelType, CancellationToken ct = default)
     {
         await EnsureNoRunningJobAsync(ct).ConfigureAwait(false);
         PrinterConfig config = await GetAsync(ct).ConfigureAwait(false)
             ?? throw new InvalidOperationException("Zebra printer settings are missing.");
         if (!_printer.IsConnected || !string.Equals(_printer.CurrentIp, config.Ip, StringComparison.OrdinalIgnoreCase) || _printer.CurrentPort != config.Port)
             throw new InvalidOperationException("Apply and connect Zebra printer settings before test print.");
-        string template = cartonTemplate ? config.CartonZplTemplate! : config.PalletZplTemplate!;
-        string code = cartonTemplate ? "TEST-CARTON" : "TEST-PALLET";
+        (string template, string code) = labelType switch
+        {
+            "Product" => (config.ProductZplTemplate!, "TEST-PRODUCT"),
+            "Carton" => (config.CartonZplTemplate!, "TEST-CARTON"),
+            "Pallet" => (config.PalletZplTemplate!, "TEST-PALLET"),
+            _ => throw new ArgumentOutOfRangeException(nameof(labelType))
+        };
         string zpl = _renderer.Render(template, code);
         await _printer.SendZplAsync(zpl, TimeSpan.FromMilliseconds(config.SendTimeoutMs), ct).ConfigureAwait(false);
     }
 
     private void Validate(PrinterConfig config)
     {
+        config.ProductZplTemplate ??= "^XA^FO40,40^BY2^BCN,90,Y,N,N^FD{{CODE}}^FS^XZ";
         if (!IPAddress.TryParse(config.Ip, out IPAddress? address) || address.AddressFamily != AddressFamily.InterNetwork)
             throw new InvalidOperationException("Zebra printer IPv4 address is invalid.");
         if (config.Port is < 1 or > 65535) throw new InvalidOperationException("Zebra printer port is invalid.");
         if (config.ConnectTimeoutMs <= 0 || config.SendTimeoutMs <= 0) throw new InvalidOperationException("Zebra printer timeouts must be positive.");
         _renderer.Validate(config.CartonZplTemplate ?? string.Empty);
         _renderer.Validate(config.PalletZplTemplate ?? string.Empty);
+        _renderer.Validate(config.ProductZplTemplate ?? string.Empty);
     }
 
     private async Task EnsureNoRunningJobAsync(CancellationToken ct)

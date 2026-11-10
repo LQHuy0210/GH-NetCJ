@@ -9,6 +9,22 @@ Manual Jobs may use PLC lamps; semi-automatic Jobs require camera plus PLC. Scan
 continues confirming Carton/Pallet labels. Device models are not fixed; protocol conformance
 and physical acceptance remain required. Product printing remains out of scope.
 
+## CJ Food serialization flow — 10/11/2026
+
+The CJ Food process diagram is now the target workflow for the manufacturing application.
+This supersedes the earlier Product-printing exclusion above. At minimum the plant application
+must accept a CJ-provided product-code file, print/apply each product code, validate each
+scanned code against the imported code master before aggregation, link accepted Products to
+Cartons, and produce a production-result file for CJ Russia. Carton and Pallet traceability
+remain supported.
+
+File schemas and the required result-file layout/transfer channel are not provided by the
+diagram. Until CJ supplies them, CSV remains the supported input and Excel/CSV-ZIP remains a
+local report only. XML parsing, DM Code database/API verification, email automation, ZNAK
+portal submission, fee/payment handling, and confirmation of portal registration are not
+implemented or assumed. The Product label must use the CJ-approved barcode symbology and ZPL
+layout once those specifications are supplied.
+
 ## Confirmed scope
 
 - Modify this repository in place and retain its architecture, branding and licensing.

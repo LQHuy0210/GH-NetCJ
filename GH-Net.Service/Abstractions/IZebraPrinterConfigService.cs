@@ -15,5 +15,5 @@ public interface IZebraPrinterConfigService
     Task<PrinterConfig?> GetAsync(CancellationToken ct = default);
     Task<ZebraPrinterApplyResult> ApplyAsync(PrinterConfig config, CancellationToken ct = default);
     Task<bool> ConnectSavedAsync(CancellationToken ct = default);
-    Task TestPrintAsync(bool cartonTemplate, CancellationToken ct = default);
+    Task TestPrintAsync(string labelType, CancellationToken ct = default);
 }

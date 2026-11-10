@@ -27,14 +27,15 @@ try
     var printerResult = await zebraService.ApplyAsync(new PrinterConfig
     {
         Ip = "127.0.0.1", Port = 9100,
+        ProductZplTemplate = "^XA^FDPR-{{CODE}}^FS^XZ",
         CartonZplTemplate = "^XA^FDC-{{CODE}}^FS^XZ",
         PalletZplTemplate = "^XA^FDP-{{CODE}}^FS^XZ",
         ConnectTimeoutMs = 2000, SendTimeoutMs = 2000
     });
     Assert(printerResult.Connected, "Zebra Apply did not connect.");
-    await zebraService.TestPrintAsync(cartonTemplate: true);
+    await zebraService.TestPrintAsync("Carton");
     Assert(zebraDevice.LastZpl == "^XA^FDC-TEST-CARTON^FS^XZ", "Carton test print used the wrong template/code.");
-    await zebraService.TestPrintAsync(cartonTemplate: false);
+    await zebraService.TestPrintAsync("Pallet");
     Assert(zebraDevice.LastZpl == "^XA^FDP-TEST-PALLET^FS^XZ", "Pallet test print used the wrong template/code.");
 
     context.Jobs.Add(new Job { Name = "Running", Status = JobStatus.Running, ProductsPerCarton = 1, CartonsPerPallet = 1 });
@@ -44,7 +45,7 @@ try
         PortName = "COM10", BaudRate = 9600, DataBits = 8, StopBits = 1,
         MessageTerminator = "CR", ReadTimeoutMs = 1000
     }));
-    await AssertThrowsAsync<InvalidOperationException>(() => zebraService.TestPrintAsync(true));
+    await AssertThrowsAsync<InvalidOperationException>(() => zebraService.TestPrintAsync("Carton"));
 }
 finally
 {

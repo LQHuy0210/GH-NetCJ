@@ -108,7 +108,8 @@ static async Task AssertSchemaAsync(PrinterManagerDbContext context)
     }
     Assert(requiredTables.All(actualTables.Contains), $"Packing tables are missing. Actual: {string.Join(", ", actualTables.Order())}");
     string[] migrations = (await context.Database.GetAppliedMigrationsAsync()).ToArray();
-    Assert(migrations.Length == 1 && migrations[0].EndsWith("_PackingInitial", StringComparison.Ordinal),
+    Assert(migrations.Length == 2 && migrations[0].EndsWith("_PackingInitial", StringComparison.Ordinal)
+            && migrations[1].EndsWith("_AddProductZplTemplate", StringComparison.Ordinal),
         $"Unexpected migration chain: {string.Join(", ", migrations)}");
 }
 
